@@ -1,0 +1,129 @@
+	.data
+	
+	
+	.text
+
+
+main:
+	li $t1, 1
+	li $t2, 2
+	li $t3, 3
+	li $t4, 4
+	li $t5, 5
+	li $t6, 6
+	li $t7, 7
+	li $t8, 8
+	
+	addiu $sp, $sp, -64	#Offset for our frame, 
+	sw $t1, 60($sp)		#1 of 8 store instructions, t1 is offset by 60
+	sw $t2, 56($sp)
+	sw $t3, 52($sp)
+	sw $t4, 48($sp)
+	sw $t5, 44($sp)
+	sw $t6, 40($sp)
+	sw $t7, 36($sp)
+	sw $t8, 32($sp)
+	
+	sw $t1, 28($sp)		#1 of 8 store instructions, t1 is offset by 60
+	sw $t2, 24($sp)
+	sw $t3, 20($sp)
+	sw $t4, 16($sp)
+	sw $t5, 12($sp)
+	sw $t6, 8($sp)
+	sw $t7, 4($sp)
+	sw $t8, 0($sp)
+	
+	#get the sum
+	JAL sum		#jump to function
+	move $s0, $v0	#store v0 into s0
+	
+	
+	lw $t1, 60($sp)		#1 of 8 store instructions, t1 is offset by 60
+	lw $t2, 56($sp)
+	lw $t3, 52($sp)
+	lw $t4, 48($sp)
+	lw $t5, 44($sp)
+	lw $t6, 40($sp)
+	lw $t7, 36($sp)
+	lw $t8, 32($sp)
+	
+	addiu $sp, $sp, 64	#Restore Register offset for our frame stack 
+	
+	
+	li $v0, 1
+	move $a0, $t1
+	syscall
+	
+	
+	#Stack frame 1	Offset	Frame size = 64
+	#t1		60
+	#t2		56
+	#t3		52
+	#t4		48
+	#t5		44
+	#t6		40
+	#t7		36
+	#t8		32
+	#arg1		28
+	#arg2		24
+	#arg3		20
+	#arg4		16
+	#arg5		12
+	#arg6		8
+	#arg7		4
+	#arg8		0
+	
+	#Stack frame 2	Offset	Frame size = 20
+	#t1		48
+	#t2		44
+	#t3		40
+	#t4		36
+	#t5		32
+	#t6		28
+	#t7		24
+	#t8		20
+	
+	#$ra		16
+	#$fp		12
+	#s1		8
+	#temp1		4
+	#temp2		0
+	
+sum:	
+
+	addiu $sp, $sp, -20	#prologue
+	sw $ra, 16($sp)
+	sw $fp, 12($sp)
+	sw $s1, 8($sp)
+	
+	li $t1, 23456
+	li $t3, 23432
+	li $t7, 12321
+	
+	lw $t1, 48($sp)	#arg1
+	lw $t2, 44($sp)	#arg2
+	add $t1, $t1, $t2	#takes the sum of t1 and t2 and stores the total into t1
+	sw $t1, 4($sp)
+	
+	lw $t1, 40($sp)	#arg3
+	lw $t2, 36($sp)	#arg4
+	add $t1, $t1, $t2	#takes the sum of t1 and t2 and stores the total into t1
+	sw $t1, 0($sp)
+	
+	lw $t1, 32($sp)	#
+	lw $t2, 28($sp)	#
+	add $t3, $t1, $t2
+	
+	lw $t1, 24($sp)	#
+	lw $t2, 20($sp)	#
+	add $t4, $t1, $t2
+	
+	li $v0, 666
+	
+	lw $s1, 8($sp)		#epilogue
+	lw $fp, 12($sp)
+	lw $ra, 16($sp)
+	
+	addiu $sp, $sp, 20
+	jr $ra
+	
